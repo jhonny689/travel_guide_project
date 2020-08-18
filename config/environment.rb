@@ -7,5 +7,8 @@ ActiveRecord::Base.establish_connection(
 )
 
 ActiveRecord::Base.logger = Logger.new(STDOUT)
-
+require 'dotenv/load'
+require 'rest-client'
+require 'json'
+require 'pry'
 require_all 'app'
