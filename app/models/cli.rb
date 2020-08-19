@@ -3,15 +3,6 @@
 class CLI
 
     def start
-        # test_request = RestClient::Request.execute(
-        #     :method =>:get,
-        #     :url => "https://www.triposo.com/api/20200803/location.json?part_of=France&tag_labels=city&count=10 id=Netherlands&fields=all",
-        #     :headers => {
-        #         "X-Triposo-Account" => ENV["TRIP_API_ACC"],
-        #         "X-Triposo-Token" => ENV["TRIP_API_KEY"]
-        #     }
-        # )
-        # test_data = JSON.parse(test_request)
         puts "Welcome to your portal to the world..."
         puts "We aim to make your tourism experience easier..."        
         prompt = TTY::Prompt.new
@@ -21,6 +12,7 @@ class CLI
                 menu.choice name: "Sign in",  value: 1
                 menu.choice name: "Sign up", value: 2
                 menu.choice name: "Exit",  value: 3
+                menu.choice name: "PRY", value: 4
               end
             case selected
             when 1
@@ -35,10 +27,20 @@ class CLI
                 end
             when 3
                 break;
+            when 4
+                Search.search_country_by_name(prompt)
             end
         end
         if logged_in_user
             puts "welcome #{logged_in_user.full_name}, we are at your service..."
+            selected = prompt.select("What would you like to do?") do |menu|
+                menu.choice name: "See Trips",  value: 1
+                menu.choice name: "Sign up", value: 2
+                menu.choice name: "Exit",  value: 3
+                menu.choice name: "PRY", value: 4
+              end
+
+
         end
     end
 end
