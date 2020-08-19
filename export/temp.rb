@@ -1,11 +1,17 @@
-{
-    "results"=>[{
-        "id"=>"France", 
-        "score"=>8.66229356279871,
-        "name"=>"France",
-        "snippet"=>"France receives more tourists than any other country in the world, and is the largest European Union country by land area.",
-        "climate"=>nil,
-        "trigram"=>1.0
-    }], 
-    "more"=>false
-}
+{"results"=>[{
+    "id"=>"Paris", 
+    "coordinates"=>{
+        "latitude"=>48.8635758, 
+        "longitude"=>2.3319654}, 
+    "score"=>9.9823657869383, 
+    "country_id"=>"France", 
+    "properties"=>[{
+        "key"=>"population", 
+        "name"=>"Population", 
+        "value"=>"2193624", 
+        "ordinal"=>0
+        }], 
+    "name"=>"Paris", 
+    "snippet"=>"The \"City of Light\" and one of the most visited places on Earth: romance, cuisine, the Eiffel Tower and a surprising amount of green await you.", "part_of"=>["wv__C38Ele-de-France", "France"], "trigram"=>1.0}, {"id"=>"Paris2C_Arkansas", "coordinates"=>{"latitude"=>35.29229893848705, "longitude"=>-93.73}, "score"=>3.44032881151523, "country_id"=>"United_States", "properties"=>[{"key"=>"population", "name"=>"Population", "value"=>"3532", "ordinal"=>0}, {"key"=>"area", "name"=>"Area", "value"=>"12.34 sq km", "ordinal"=>1}], "name"=>"Paris", "snippet"=>"Recommended places to visit are Logan County Courthouse, Smith Hospital and First Christian Church.", "part_of"=>["Arkansas", "United_States"], "trigram"=>1.0}, {"id"=>"Paris2C_Illinois", "coordinates"=>{"latitude"=>39.6117016, "longitude"=>-87.69388888888889}, "score"=>2.78418460947024, "country_id"=>"United_States", "properties"=>[{"key"=>"population", "name"=>"Population", "value"=>"8837", "ordinal"=>0}, {"key"=>"area", "name"=>"Area", "value"=>"14.75 sq km", "ordinal"=>1}], "name"=>"Paris", "snippet"=>"Recommended places to visit are Edgar County Courthouse, Henry Clay Moss House and France Hotel.", "part_of"=>["Illinois", "United_States"], "trigram"=>1.0}, {"id"=>"Paris2C_Kentucky", "coordinates"=>{"latitude"=>38.20860434391941, "longitude"=>-84.252812}, "score"=>3.56381923475265, "country_id"=>"United_States", "properties"=>[{"key"=>"population", "name"=>"Population", "value"=>"9183", "ordinal"=>0}, {"key"=>"area", "name"=>"Area", "value"=>"15.4 sq km", "ordinal"=>1}], "name"=>"Paris", "snippet"=>"Known for golf. Recommended places to visit are Duncan Tavern, Claiborne Farm and Hopewell Museum / Historic Paris-Bourbon County.", "part_of"=>["Kentucky", "United_States"], "trigram"=>1.0}, {"id"=>"Paris2C_Maine", "coordinates"=>{"latitude"=>44.22356743364806, "longitude"=>-70.51302611603401}, "score"=>3.25311113294096, "country_id"=>"United_States", "properties"=>[{"key"=>"population", "name"=>"Population", "value"=>"5449", "ordinal"=>0}, {"key"=>"area", "name"=>"Area", "value"=>"105.59 sq km", "ordinal"=>1}], "name"=>"Paris", "snippet"=>"Known for golf. Recommended places to visit are McLaughlin Garden, Courthouse Square and Paris Hills Historic District.", "part_of"=>["Maine", "United_States"], "trigram"=>1.0}, {"id"=>"Paris2C_Tennessee", "coordinates"=>{"latitude"=>36.30138888888889, "longitude"=>-88.31215354308405}, "score"=>4.0894720670624, "country_id"=>"United_States", "properties"=>[{"key"=>"population", "name"=>"Population", "value"=>"10202", "ordinal"=>0}, {"key"=>"area", "name"=>"Area", "value"=>"33.43 sq km", "ordinal"=>1}], "name"=>"Paris", "snippet"=>"Recommended places to visit are Henry County Courthouse, Eiffel Tower and Porter House.", "part_of"=>["Tennessee", "United_States"], "trigram"=>1.0}, {"id"=>"Paris2C_Texas", "coordinates"=>{"latitude"=>33.661066475381915, "longitude"=>-95.53761336056942}, "score"=>5.36531776651443, "country_id"=>"United_States", "properties"=>[{"key"=>"population", "name"=>"Population", "value"=>"25171", "ordinal"=>0}, {"key"=>"area", "name"=>"Area", "value"=>"110.7 sq km", "ordinal"=>1}], "name"=>"Paris", "snippet"=>"Recommended places to visit are Lamar County Historical Museum, Sam Bell Maxey House and Eiffel Tower.", 
+    "part_of"=>["Texas", "United_States"], 
+    "trigram"=>1.0}], "more"=>false}

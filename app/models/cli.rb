@@ -3,8 +3,9 @@
 class CLI
 
     def start
-        puts "Welcome to your portal to the world..."
-        puts "We aim to make your tourism experience easier..."        
+        system "clear"
+        puts "\t Welcome to your personal portal to the whole world...\n\n"
+        puts "\t We aim to make your tourism experience easier...\n\n"        
         prompt = TTY::Prompt.new
         logged_in_user = nil
         until logged_in_user do
@@ -28,7 +29,7 @@ class CLI
             when 3
                 break;
             when 4
-                Search.search_country_by_name(prompt)
+                Search.lookup_city_by_name(prompt)
             end
         end
         if logged_in_user
