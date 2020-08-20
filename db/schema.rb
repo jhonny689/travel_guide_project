@@ -74,14 +74,16 @@ ActiveRecord::Schema.define(version: 2020_08_20_043316) do
   create_table "itineraries", force: :cascade do |t|
     t.integer "trip_id"
     t.integer "country_id"
-    t.datetime "itinerary_start"
-    t.datetime "itinerary_end"
+    t.date "itinerary_start"
+    t.date "itinerary_end"
   end
 
   create_table "trips", force: :cascade do |t|
     t.integer "user_id"
-    t.datetime "departure"
-    t.datetime "return"
+    t.date "departure"
+    t.date "return"
+    t.boolean "completed?", default: false
+    t.string "name"
   end
 
   create_table "users", force: :cascade do |t|

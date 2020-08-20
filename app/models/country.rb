@@ -50,4 +50,12 @@ class Country < ActiveRecord::Base
         Search.lookup_top_ten_cities(self.country_api_id)
     end
 
+    def self.country_names
+        self.all.map{|e|e.name}
+    end
+
+    def city_names
+        cities.map{|e|e.name}.flatten
+    end
+    
 end
