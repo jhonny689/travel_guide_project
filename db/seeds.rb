@@ -8,6 +8,7 @@ City.destroy_all
 City.create(name: "Roma", country_id: roma.id)
 City.create(name: "Carthago", country_id: carthago.id)
 City.create(name: "Spartii", country_id: sparta.id)
+City.create(name: "Mediolanum", country_id: roma.id)
 
 
 User.destroy_all
