@@ -2,16 +2,12 @@ require 'pry'
 class User < ActiveRecord::Base
     has_many :trips
 
-    def create_trip
-        prompt = TTY::Prompt.new
-        puts "Welcome to the Trip Creator, it will help you create your perfect vacation!"
-        loc_response = nil  
-        until Country.all.any?{|e|e.name == loc_response} or City.all.any?{|e|e.name == loc_response}
-            loc_response = prompt.ask("Please enter a valid place you would like to visit")
-        end
-        dep_response = prompt.ask("Please enter the day you would like to depart", convert: :date)
-        ret_response = prompt.ask("Please enter the day you would like to return", convert: :date)
-        trip = Trip.find_or_create_by(user_id: self, completed?: false)
+    def create_trip(name)
+        Trip.create(user_id: self, name: name)
+    end
+
+    def create_trip_with_itinerary(name, start, end)
+        trip = Trip.find_or_create_by(user_id: self, completed?: false name: name)
         Itinerary.create(trip_id: trip.id, country_id: loc_response.id, itinerary_start: dep_response, itinerary_end: ret_response) 
         trip.sort_dates
     end
@@ -36,7 +32,7 @@ class User < ActiveRecord::Base
         trips.map{|e|e.activities}.flatten
     end
 
-    def all_activities
+    def all_attractions
         trips.map{|e|e.attractions}.flatten
     end
 

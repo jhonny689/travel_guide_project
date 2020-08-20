@@ -42,8 +42,8 @@ class Trip < ActiveRecord::Base
         acts.join(attracts).flatten
     end
 
-    def add_new_activity
-        Activity.create(trip_id: self.id)
+    def add_new_activity(act)
+        Activity.create(trip_id: self.id, activity_api_id: act.id)
     end
 
 
