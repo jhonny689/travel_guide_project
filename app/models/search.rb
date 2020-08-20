@@ -5,28 +5,37 @@ class Search
     ## and it returns an object of type Country with all the relevant data
 
     def self.lookup_country_by_name(prompt)
-        while true do
-            # ask for user's input
-            country = prompt.ask("What Country is your next destination? ")
-            
-            # Build your api query url
+        if prompt.class == String
             url_query = "https://www.triposo.com/api/20200803/location.json?"
-            tag_labels = "tag_labels=country"
-            annotate = "annotate=trigram:#{country}"
-            trigram = "trigram=>=0.3"
+            id = "id=#{prompt}"
             fields="fields=id,name,score,snippet"
-            order_by="order_by=-score"
-            url_query += tag_labels +"&"+ annotate +"&"+ trigram +"&"+ fields +"&"+ order_by
+            url_query += id +"&"+ fields
             api_resp = self.execute(url_query)
-            
-            # Study the API response and act correspondingly
-            if self.single_api_result?(api_resp["results"])
-                # create country object
-                return Country.new_from_api(api_resp["results"][0])
-            else
-                # tell the user his query didn't return any result
-                answer = prompt.yes?("We are sorry, your search returned no results, do you want to try again?")
-                !answer ? return : ""
+            return api_resp["results"][0]
+        else    
+            while true do
+                # ask for user's input
+                country = prompt.ask("What Country is your next destination? ")
+                
+                # Build your api query url
+                url_query = "https://www.triposo.com/api/20200803/location.json?"
+                tag_labels = "tag_labels=country"
+                annotate = "annotate=trigram:#{country}"
+                trigram = "trigram=>=0.3"
+                fields="fields=id,name,score,snippet"
+                order_by="order_by=-score"
+                url_query += tag_labels +"&"+ annotate +"&"+ trigram +"&"+ fields +"&"+ order_by
+                api_resp = self.execute(url_query)
+                
+                # Study the API response and act correspondingly
+                if self.single_api_result?(api_resp["results"])
+                    # create country object
+                    return Country.new_from_api(api_resp["results"][0])
+                else
+                    # tell the user his query didn't return any result
+                    answer = prompt.yes?("We are sorry, your search returned no results, do you want to try again?")
+                    !answer ? return : ""
+                end
             end
         end
     end
@@ -58,7 +67,9 @@ class Search
             elsif self.many_api_results?(api_resp["results"])
                 # ask for more details to narrow the search
                 found_city = self.narrow_city_lookup(prompt, api_resp["results"])
-                found_city ? City.new_from_api(found_city) : ""
+                if found_city 
+                    return City.new_from_api(found_city)
+                end
             else
                 # tell the user this city doesn't exist yet
                 answer = prompt.yes?("Sorry, We couldn't find the city you are looking for, try again?")
@@ -109,7 +120,7 @@ class Search
         trigram = "trigram=>=0.3"
         location_id = "location_id=#{location}"
         count = "count=1"
-        fields = "fields=id,name,coordinates,score,intro,properties,snippet"
+        fields = "fields=id,location_id,name,coordinates,score,intro,properties,snippet"
         #exclude_fields = "exclude_fields=images,content,best_for,content"
         order_by = "order_by=-score"
 
@@ -134,7 +145,7 @@ class Search
         location_id="location_id=#{city.name}"
         tag_labels="tag_labels=#{activity_labels}"
         count = "count=50"
-        fields = "fields=id,name,coordinates,score,intro,properties,snippet"
+        fields = "fields=id,location_id,name,coordinates,score,intro,properties,snippet"
         order_by = "order_by=-score"
         #binding.pry
         url_query += location_id +"&"+ tag_labels +"&"+ count +"&"+ fields +"&"+ order_by

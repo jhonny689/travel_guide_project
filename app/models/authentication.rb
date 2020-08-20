@@ -12,6 +12,11 @@ class Authentication < ActiveRecord::Base
             return auth_user[0]
         else
             puts "Authentication error: wrong username and/or password; if you don't have an account please sign up"
+            if prompt.yes?("Do you want to try again? ")
+                return
+            else
+                return exit!
+            end
         end
     end
 

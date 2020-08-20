@@ -17,13 +17,55 @@ class Trip < ActiveRecord::Base
             if selected == 0
                 puts "TODO: Call method creating new Trip, and adding this country/city/attraction/activity to it"
                 newTrip = User.find(User.logged_in_user).create_trip(prompt)
-                binding.pry
+                # binding.pry
             elsif selected == -1
                 return
             else
                 ## puts "TODO: link this country to selected trip using trip id in selected variable"
+                # binding.pry
                 if(!country_obj && !city_obj && !attraction_obj && !activity_obj)
                     selected.menu(prompt)
+                elsif country_obj
+                    if prompt.yes?("Are you sure you want to add #{country_obj.name} to #{selected.name}? ")
+                        start_date = prompt.ask("Please enter your arrival date [yyyy/mm/dd]", validate: /^([2][0][1-9][0-9])[-\/.](0[1-9]|[1][0-2])[-\/.](0[1-9]|[12][0-9]|3[01])/)
+                        fin_date = prompt.ask("Please enter your departure date [yyyy/mm/dd]", validate: /^([2][0][1-9][0-9])[-\/.](0[1-9]|[1][0-2])[-\/.](0[1-9]|[12][0-9]|3[01])/)
+                        selected.add_loc_trip(country_obj, start_date, fin_date)
+                        break 
+                    end
+                elsif city_obj
+                    # binding.pry
+                    if prompt.yes?("Are you sure you want to add #{city_obj.name} to #{selected.name}? ") 
+                        start_date = prompt.ask("Please enter your arrival date [yyyy/mm/dd]", validate: /^([2][0][1-9][0-9])[-\/.](0[1-9]|[1][0-2])[-\/.](0[1-9]|[12][0-9]|3[01])/)
+                        fin_date = prompt.ask("Please enter your departure date [yyyy/mm/dd]", validate: /^([2][0][1-9][0-9])[-\/.](0[1-9]|[1][0-2])[-\/.](0[1-9]|[12][0-9]|3[01])/)
+                        selected.add_loc_trip(city_obj, start_date, fin_date)
+                        break
+                    end
+                elsif attraction_obj
+                    if prompt.yes?("Are you sure you want to add #{attraction_obj.name} to #{selected.name}? ")
+                        if User.find(User.logged_in_user).trips.find(selected.id).attractions.any?{|trip_attraction| trip_attraction.attraction_api_id == attraction_obj.attraction_api_id}
+                            prompt.warn("Attraction #{attraction_obj.name} has been added to the same trip before, you cannot add it more than once")
+                        elsif selected.all_cities.map{|city| city.api_id}.include?(attraction_obj.city_api_id)
+                            attraction_obj.trip_id = selected.id
+                            attraction_obj.save
+                            #break
+                        else
+                            prompt.warn("This attraction does not belong to any city in this trip, kindly make sure to add the corresponding city first.")
+                            #break
+                        end
+                        break
+                    end
+                elsif activity_obj
+                    if prompt.yes?("Are you sure you want to add #{activity_obj.name} to #{selected.name}? ")
+                        if User.find(User.logged_in_user).trips.find(selected.id).activities.any?{|trip_act|trip_act.activity_api_id == activity_obj.activity_api_id}
+                            prompt.warn("Activity #{activity_obj.name} has been added to the same trip before, you cannot add it more than once")
+                        elsif selected.all_cities.map{|city| city.api_id}.include?(activity_obj.city_api_id)
+                            activity_obj.trip_id = selected.id
+                            activity_obj.save
+                        else
+                            prompt.warn("This activity does not belong to any city in this trip, kindly make sure to add the corresponding city first.")
+                        end
+                        break 
+                    end
                 end
             end
         end
@@ -78,6 +120,10 @@ class Trip < ActiveRecord::Base
         self
     end
 
+    def all_cities
+        self.countries.map{|e|e.cities}.flatten
+    end
+
     def trip_finalize
         #binding.pry
         self.update(completed?: true)
@@ -90,12 +136,15 @@ class Trip < ActiveRecord::Base
         self.save
     end
 
-    def update_trip(location=nil, start, finish)
-        if City.all.include?(location)
-            Itinerary.create_by_city(location, start, finish, self)
+    def add_loc_trip(location=nil, start, finish)
+   
+        if location.class == City
+            country = Country.new_from_api(Search.lookup_country_by_name(location.country_api_id))
+            Itinerary.create_by_city(location, country, start, finish, self)
             self.sort_dates
-        elsif Country.all.include?(location)
-            Itinerary.create(country_id: location.id, itinerary_start: start, itinerary_end: finish, trip_id: self.id)
+        elsif location.class == Country
+            location.save
+            Itinerary.create(country: location, itinerary_start: start, itinerary_end: finish, trip: self)
             self.sort_dates
         else 
             "Please enter a valid place you would like to visit"
@@ -109,7 +158,7 @@ class Trip < ActiveRecord::Base
     end
 
     def add_new_activity(act)
-        Activity.create(trip_id: self.id, activity_api_id: act.id)
+        Activity.create(trip: self, activity_api_id: act.id)
     end
 
 

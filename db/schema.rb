@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_20_043316) do
+ActiveRecord::Schema.define(version: 2020_08_20_200822) do
 
   create_table "activities", force: :cascade do |t|
     t.integer "trip_id"
@@ -27,6 +27,7 @@ ActiveRecord::Schema.define(version: 2020_08_20_043316) do
     t.string "bus"
     t.string "train"
     t.string "snippet"
+    t.string "city_api_id"
   end
 
   create_table "attractions", force: :cascade do |t|
@@ -44,6 +45,7 @@ ActiveRecord::Schema.define(version: 2020_08_20_043316) do
     t.string "bus"
     t.string "train"
     t.string "snippet"
+    t.string "city_api_id"
   end
 
   create_table "authentications", force: :cascade do |t|

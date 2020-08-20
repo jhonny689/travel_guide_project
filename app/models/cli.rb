@@ -13,32 +13,34 @@ class CLI
     end
 
     def home_page_functionality(prompt)
-        system "clear"
-        puts "\t Welcome to your personal portal to the whole world...\n\n"
-        puts "\t We aim to make your tourism experience easier...\n\n"
+        # while true do
+            system "clear"
+            puts "\t Welcome to your personal portal to the whole world...\n\n"
+            puts "\t We aim to make your tourism experience easier...\n\n"
 
-        selected = prompt.select("What would you like to do?") do |menu|
-            menu.choice name: "Sign in",  value: 1
-            menu.choice name: "Sign up", value: 2
-            menu.choice name: "Exit",  value: 3
-            menu.choice name: "test", value: 4
-          end
-        case selected
-        when 1
-            logged_in_user = Authentication.signin(prompt)
-        when 2
-            puts "create sign up method"
-            new_user = Authentication.signup(prompt)
-            select_option = prompt.yes?("Your user has been created, would you like to sign in?")
-            #binding.pry
-            if select_option == true
-                logged_in_user = new_user
+            selected = prompt.select("What would you like to do?") do |menu|
+                menu.choice name: "Sign in",  value: 1
+                menu.choice name: "Sign up", value: 2
+                menu.choice name: "Exit",  value: 3
+                menu.choice name: "test", value: 4
             end
-        when 3
-            return exit!
-        when 4
-            binding.pry
-        end
+            case selected
+            when 1
+                logged_in_user = Authentication.signin(prompt)
+            when 2
+                puts "create sign up method"
+                new_user = Authentication.signup(prompt)
+                select_option = prompt.yes?("Your user has been created, would you like to sign in?")
+                #binding.pry
+                if select_option == true
+                    logged_in_user = new_user
+                end
+            when 3
+                return exit!
+            when 4
+                binding.pry
+            end
+        # end
     end
 
     def dashboard_functionality(logged_in_user, prompt)
@@ -80,7 +82,7 @@ class CLI
             when 2
                 city = Search.lookup_city_by_name(prompt)
                 city ? city.menu(prompt) : ""
-
+                break
             when 3
                 puts "this feature is yet to be developed..."
             when 4

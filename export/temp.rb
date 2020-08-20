@@ -1,1 +1,1 @@
-{"results"=>[{"id"=>"Italy", "score"=>8.23739200557803, "name"=>"Italy", "snippet"=>"The boot-shaped Italian peninsula was the cradle of both the Roman Empire and the Renaissance, and has attracted tourists from afar since before the country was unified in 1870.", "trigram"=>1.0}], "more"=>false}
+{"results"=>[{"id"=>"France", "score"=>8.66229356279871, "name"=>"France", "snippet"=>"France receives more tourists than any other country in the world, and is the largest European Union country by land area."}], "more"=>false}

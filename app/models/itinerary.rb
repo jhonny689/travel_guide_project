@@ -2,10 +2,20 @@ class Itinerary < ActiveRecord::Base
     belongs_to :trip
     belongs_to :country
 
-    def self.create_by_city(c, start, fin, trip)
+    def self.create_by_city(city, country, start, fin, trip)
         start_date = Date.parse(start)
         fin_date = Date.parse(fin)
-        Itinerary.create(country_id: c.country_id, itinerary_start: start_date, itinerary_end: fin_date, trip_id: trip.id)
+        #city.country = Country.find_by(country_api_id: country.country_api_id) ? Country.find_by(country_api_id: country.country_api_id) : country
+        #binding.pry
+        if User.find(User.logged_in_user).trips.find(trip.id).countries.find_by(country_api_id: country.country_api_id)
+            city.country_id =  User.find(User.logged_in_user).trips.find(trip.id).countries.find_by(country_api_id: country.country_api_id).id 
+        else
+            db_country = Country.new_from_api(country)
+            db_country.save
+            city.country_id = db_country.id
+        end
+        city.save
+        Itinerary.create(country_id: city.country_id, itinerary_start: start_date, itinerary_end: fin_date, trip_id: trip.id)
     end
 
     def change_dates(start, fin)
