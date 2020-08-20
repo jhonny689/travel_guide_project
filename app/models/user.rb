@@ -10,7 +10,7 @@ class User < ActiveRecord::Base
         @@logged_in_user
     end
     def self.logged_in_user= (user)
-        @@logged_in_user = user.id
+        @@logged_in_user = user ? user.id : nil
     end
 
     def create_trip(prompt)

@@ -74,11 +74,19 @@ class Trip < ActiveRecord::Base
     def menu(prompt)
         self.display
         while true do
-            selected = prompt.select("#{self.name} is the attraction you are looking for, what would you like to do? ") do |menu|
-                menu.choice name:"Modify #{self.name}", value: 1
-                menu.choice name:"Delete #{self.name}", value: 2
-                menu.choice name:"Mark as Complete", value: 3
-                menu.choice name:"Cancel", value:-1
+            if(!self.completed?)
+                selected = prompt.select("#{self.name} is the selected trip, what would you like to do? ") do |menu|
+                    menu.choice name:"Modify #{self.name}", value: 1
+                    menu.choice name:"Delete #{self.name}", value: 2
+                    menu.choice name:"Mark as Complete", value: 3
+                    menu.choice name:"Cancel", value:-1
+                end
+            else
+                selected = prompt.select("We hope you enjoyed #{self.name}, what would you like to do next?") do |menu|
+                    menu.choice name:"Display Completed #{self.name}", value: 9
+                    menu.choice name:"Delete Completed #{self.name}", value: 2
+                    menu.choice name:"Cancel", value:-1
+                end
             end
             case selected
             when 1
@@ -96,6 +104,9 @@ class Trip < ActiveRecord::Base
                     self.trip_finalize
                 end
                 break
+            when 9
+                ## Display only for fun
+
             when -1
                 return
             end
@@ -139,9 +150,13 @@ class Trip < ActiveRecord::Base
     def add_loc_trip(location=nil, start, finish)
    
         if location.class == City
-            country = Country.new_from_api(Search.lookup_country_by_name(location.country_api_id))
-            Itinerary.create_by_city(location, country, start, finish, self)
-            self.sort_dates
+            if self.all_cities.any?{|trip_city| trip_city.api_id == location.api_id}
+                puts "#{city.name} already exists for #{self.name}, add it to a different trip maybe!?"
+            else
+                country = Country.new_from_api(Search.lookup_country_by_name(location.country_api_id))
+                Itinerary.create_by_city(location, country, start, finish, self)
+                self.sort_dates
+            end
         elsif location.class == Country
             location.save
             Itinerary.create(country: location, itinerary_start: start, itinerary_end: finish, trip: self)

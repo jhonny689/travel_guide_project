@@ -37,7 +37,11 @@ class City < ActiveRecord::Base
                 attraction ? attraction.menu(prompt) : ""
             when 4
                 activity_label = Activity.list_activity_types(prompt, self)
-                Activity.check_individually(self.lookup_activities_in_city(prompt, activity_label, self), prompt)
+                if !activity_label
+                    ""
+                else
+                    Activity.check_individually(self.lookup_activities_in_city(prompt, activity_label, self), prompt)
+                end
             when -1
                 return
             end

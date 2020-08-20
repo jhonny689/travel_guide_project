@@ -36,11 +36,20 @@ class Activity < ActiveRecord::Base
 
     def self.list_activity_types(prompt, city)
         available_labels = Search.lookup_labels_in_city(city)
-        answer = prompt.multi_select("Select the tags you want to search for: ") do |menu|
-            available_labels.each{|l| menu.choice l, l}
+        while true
+            answer = prompt.multi_select("Select the tags you want to search for: ") do |menu|
+                menu.choice "Cancel", :cancel
+                available_labels.each{|l| menu.choice l, l}
+            end
+            #binding.pry
+            if answer.count == 0
+                puts "You need to select at least one activity to search for, or cancel"
+            elsif answer.include?(:cancel)
+                break
+            else
+                return answer = answer.reduce(""){|res, label| res += "#{label}|"}.chop
+            end
         end
-        #binding.pry
-        answer = answer.reduce(""){|res, label| res += "#{label}|"}.chop
     end
 
     def self.check_individually(array_activities, prompt)

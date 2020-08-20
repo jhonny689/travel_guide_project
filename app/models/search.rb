@@ -141,19 +141,27 @@ class Search
     end
 
     def self.lookup_activities_in_city(prompt, activity_labels, city)
-        url_query = "https://www.triposo.com/api/20200803/poi.json?"
-        location_id="location_id=#{city.name}"
-        tag_labels="tag_labels=#{activity_labels}"
-        count = "count=50"
-        fields = "fields=id,location_id,name,coordinates,score,intro,properties,snippet"
-        order_by = "order_by=-score"
-        #binding.pry
-        url_query += location_id +"&"+ tag_labels +"&"+ count +"&"+ fields +"&"+ order_by
-        api_resp = self.execute(url_query)
-        #binding.pry
-        to_return_activities = api_resp["results"].map do |api_activity|
-            Activity.new_from_api(api_activity)
-        end
+        # while true do
+            if activity_labels != ""
+                url_query = "https://www.triposo.com/api/20200803/poi.json?"
+                location_id="location_id=#{city.name}"
+                tag_labels="tag_labels=#{activity_labels}"
+                count = "count=50"
+                fields = "fields=id,location_id,name,coordinates,score,intro,properties,snippet"
+                order_by = "order_by=-score"
+                #binding.pry
+                url_query += location_id +"&"+ tag_labels +"&"+ count +"&"+ fields +"&"+ order_by
+                api_resp = self.execute(url_query)
+                #binding.pry
+                return to_return_activities = api_resp["results"].map do |api_activity|
+                    Activity.new_from_api(api_activity)
+                end
+            else
+                if prompt.yes?("You need to select at least one activity, do you want to try again? ")
+
+                end
+            end
+        # end
     end
 
     ## search.execute allows you to execute any api query you pass as argument
