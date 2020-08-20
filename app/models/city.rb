@@ -71,6 +71,7 @@ class City < ActiveRecord::Base
 
     def lookup_activities_in_city(prompt, activity_labels, city)
         Search.lookup_activities_in_city(prompt, activity_labels, city)
+    end
     def self.city_names
         self.all.map{|e|e.name}
     end

@@ -1,4 +1,5 @@
 class Trip < ActiveRecord::Base
+    belongs_to :user
     has_many :activities
     has_many :attractions
     has_many :itineraries
@@ -20,9 +21,6 @@ class Trip < ActiveRecord::Base
             puts "TODO: link this country to selected trip using trip id in selected variable"
         end
     end
-end
-    belongs_to :user
-
 
     def self.create_trip_by_city(name, city, start, fin)
         new_trip = Trip.create(name: name)
