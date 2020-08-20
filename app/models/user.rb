@@ -6,9 +6,9 @@ class User < ActiveRecord::Base
         Trip.create(user_id: self, name: name)
     end
 
-    def create_trip_with_itinerary(name, start, end)
-        trip = Trip.find_or_create_by(user_id: self, completed?: false name: name)
-        Itinerary.create(trip_id: trip.id, country_id: loc_response.id, itinerary_start: dep_response, itinerary_end: ret_response)
+    def create_trip_with_itinerary(name, start, fin)
+        trip = Trip.find_or_create_by(user_id: self, completed?: false, name: name)
+        Itinerary.create(trip_id: trip.id, country_id: loc_response.id, itinerary_start: start, itinerary_end: fin)
         trip.sort_dates
     end
 
