@@ -5,69 +5,145 @@ class Search
     ## and it returns an object of type Country with all the relevant data
 
     def self.lookup_country_by_name(prompt)
-        # ask for user's input
-        country = prompt.ask("What Country is your next destination? ")
-        
-        # Build your api query url
-        url_query = "https://www.triposo.com/api/20200803/location.json?"
-        tag_labels = "tag_labels=country"
-        annotate = "annotate=trigram:#{country}"
-        trigram = "trigram=>=0.3"
-        fields="fields=id,name,score,snippet"
-        order_by="order_by=-score"
-        url_query += tag_labels +"&"+ annotate +"&"+ trigram +"&"+ fields +"&"+ order_by
-        api_resp = self.execute(url_query)
-        
-        # Study the API response and act correspondingly
-        if self.single_api_result?(api_resp["results"])
-            # create country object
-            Country.new_from_api(api_resp["results"][0])
-        else
-            # tell the user his query didn't return any result
-            puts "Are you sure the country you are looking for is on earth!? Try again."
+        while true do
+            # ask for user's input
+            country = prompt.ask("What Country is your next destination? ")
+            
+            # Build your api query url
+            url_query = "https://www.triposo.com/api/20200803/location.json?"
+            tag_labels = "tag_labels=country"
+            annotate = "annotate=trigram:#{country}"
+            trigram = "trigram=>=0.3"
+            fields="fields=id,name,score,snippet"
+            order_by="order_by=-score"
+            url_query += tag_labels +"&"+ annotate +"&"+ trigram +"&"+ fields +"&"+ order_by
+            api_resp = self.execute(url_query)
+            
+            # Study the API response and act correspondingly
+            if self.single_api_result?(api_resp["results"])
+                # create country object
+                return Country.new_from_api(api_resp["results"][0])
+            else
+                # tell the user his query didn't return any result
+                answer = prompt.yes?("We are sorry, your search returned no results, do you want to try again?")
+                !answer ? return : ""
+            end
         end
     end
 
-    def self.lookup_city_by_name(prompt)
-        # ask for user's input
-        city = prompt.ask("What City is your next destination? ")
+    def self.lookup_city_by_name(prompt, country=nil)
+        while true do
+            # ask for user's input
+            city = prompt.ask("What City is your next destination? ")
 
-        # Build your api query url
+            # Build your api query url
+            url_query = "https://www.triposo.com/api/20200803/location.json?"
+            tag_labels = "tag_labels=city"
+            annotate = "annotate=trigram:#{city}"
+            trigram = "trigram=>=0.8"
+            fields="fields=id,coordinates,score,country_id,properties,name,snippet,part_of"
+            order_by="order_by=-trigram"
+            if country == nil
+                url_query += tag_labels +"&"+ annotate +"&"+ trigram +"&"+ fields +"&"+ order_by
+            else
+                part_of = "part_of=#{country}"
+                url_query += part_of +"&"+ tag_labels +"&"+ annotate +"&"+ trigram +"&"+ fields +"&"+ order_by
+            end
+            api_resp = self.execute(url_query)
+            #binding.pry
+            # study the API response and act correspondingly
+            if self.single_api_result?(api_resp["results"])
+                # create city object
+                return City.new_from_api(api_resp["results"][0])
+            elsif self.many_api_results?(api_resp["results"])
+                # ask for more details to narrow the search
+                found_city = self.narrow_city_lookup(prompt, api_resp["results"])
+                found_city ? City.new_from_api(found_city) : ""
+            else
+                # tell the user this city doesn't exist yet
+                answer = prompt.yes?("Sorry, We couldn't find the city you are looking for, try again?")
+                !answer ? return : ""
+            end
+        end
+    end
+
+    def self.lookup_top_ten_cities(country_id)
         url_query = "https://www.triposo.com/api/20200803/location.json?"
+        part_of = "part_of=#{country_id}"
         tag_labels = "tag_labels=city"
-        annotate = "annotate=trigram:#{city}"
-        trigram = "trigram=>=0.8"
-        fields="fields=id,coordinates,score,country_id,properties,name,snippet,part_of"
-        order_by="order_by=-trigram"
-        url_query += tag_labels +"&"+ annotate +"&"+ trigram +"&"+ fields +"&"+ order_by
-        api_resp = self.execute(url_query)
-        
-        # study the API response and act correspondingly
-        if self.single_api_result?(api_resp["results"])
-            # create city object
-            City.create_from_api(api_resp["results"][0])
-        elsif self.many_api_results?(api_resp["results"])
-            # ask for more details to narrow the search
-            found_city = self.narrow_city_lookup(prompt, api_resp["results"])
-            City.create_from_api(found_city)
-        else
-            # tell the user this city doesn't exist yet
-            puts "Sorry, the city you are looking for is fictional, try later... "
+        count = "count=10"
+        fields= "fields=id,coordinates,score,country_id,properties,name,snippet,part_of"
+        order_by= "order_by=-score"
+
+        url_query += part_of +"&"+ tag_labels +"&"+ count +"&"+ fields +"&"+ order_by
+        top_cities = self.execute(url_query)
+        #binding.pry
+        to_return_cities = top_cities["results"].map do |api_city|
+            City.new_from_api(api_city)
         end
-        binding.pry
     end
 
-    # def self.lookup_city_by_name_and_country(prompt = nil, city_name = nil, country_id = nil)
-    #     if prompt
-    #         country = self.lookup_country_by_name(prompt.ask("What Country is your next destination? "))
-    #         country_id = country.country_api_id
-    #         city_name = prompt.ask("What City is your next destination? ")
-    #     else
+    def self.people_also_visited(city)
+        url_query = "https://www.triposo.com/api/20200803/location.json?"
+        part_of = "part_of=#{city.country_api_id}"
+        annotate = "annotate=distance:45.47083,9.18815"
+        distance = "distance=<=300000"
+        also_visited = "also_visited=#{city.api_id}"
+        count = "count=10"
+        fields = "fields=id,coordinates,score,country_id,properties,name,snippet,part_of"
+        order_by = "order_by=-also_visited_score"
 
-    #     end
+        url_query += part_of +"&"+ annotate +"&"+ distance +"&"+ also_visited +"&"+ count +"&"+ fields +"&"+ order_by
+        also_visited_cities = self.execute(url_query)
+        #binding.pry
+        to_return_cities = also_visited_cities["results"].map do |api_city|
+            #binding.pry
+            City.new_from_api(api_city)
+        end
+    end
 
-    # end
+    def self.lookup_attraction_by_name(prompt, location)
+        attraction = prompt.ask("What's the name of the attraction you are looking for? ")
+        url_query = "https://www.triposo.com/api/20200803/poi.json?"
+        annotate = "annotate=trigram:#{attraction}"
+        trigram = "trigram=>=0.3"
+        location_id = "location_id=#{location}"
+        count = "count=1"
+        fields = "fields=id,name,coordinates,score,intro,properties,snippet"
+        #exclude_fields = "exclude_fields=images,content,best_for,content"
+        order_by = "order_by=-score"
 
+        url_query += annotate +"&"+ trigram +"&"+ location_id +"&"+ count +"&"+ fields +"&"+ order_by
+        attraction_resp = self.execute(url_query)
+        attraction = Attraction.new_from_api(attraction_resp["results"][0])
+    end
+
+    def self.lookup_labels_in_city(city)
+        url_query = "https://www.triposo.com/api/20200803/tag.json?"
+        location_id = "location_id=#{city.api_id}"
+        count = "count=50"
+        order_by = "order_by=-score"
+
+        url_query += location_id +"&"+ count +"&"+ order_by
+        labels_resp = self.execute(url_query)
+        labels_resp["results"].map{|label| label["label"]}
+    end
+
+    def self.lookup_activities_in_city(prompt, activity_labels, city)
+        url_query = "https://www.triposo.com/api/20200803/poi.json?"
+        location_id="location_id=#{city.name}"
+        tag_labels="tag_labels=#{activity_labels}"
+        count = "count=50"
+        fields = "fields=id,name,coordinates,score,intro,properties,snippet"
+        order_by = "order_by=-score"
+        #binding.pry
+        url_query += location_id +"&"+ tag_labels +"&"+ count +"&"+ fields +"&"+ order_by
+        api_resp = self.execute(url_query)
+        #binding.pry
+        to_return_activities = api_resp["results"].map do |api_activity|
+            Activity.new_from_api(api_activity)
+        end
+    end
 
     ## search.execute allows you to execute any api query you pass as argument
     ## so your serch methods don't have to worry about sending the request everytime
@@ -118,8 +194,11 @@ class Search
             end.uniq.each do |country|
                 menu.choice name: "#{country}", value: country
             end
+            menu.choice name:"Cancel", value: -1
         end
-
+        if country == -1
+            return
+        end
         ## Filter by your user's choice of country
         refined_cities = result.filter do |city|
             city["country_id"]==country
@@ -141,8 +220,11 @@ class Search
                 end.each do |region|
                     menu.choice name: "#{region}", value: region
                 end
+                menu.choice name: "Cancel", value: -1
             end
-
+            if part_of == -1
+                return
+            end
             ## Filter by region selected by the user
             theCity = refined_cities.find do |city|
                 city["part_of"].include?(part_of)

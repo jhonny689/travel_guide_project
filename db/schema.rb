@@ -10,16 +10,40 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_19_182437) do
+ActiveRecord::Schema.define(version: 2020_08_20_043316) do
 
   create_table "activities", force: :cascade do |t|
     t.integer "trip_id"
     t.string "activity_api_id"
+    t.string "name"
+    t.float "latitude"
+    t.float "longitude"
+    t.string "story"
+    t.string "phone"
+    t.string "address"
+    t.string "website"
+    t.string "price"
+    t.string "hours"
+    t.string "bus"
+    t.string "train"
+    t.string "snippet"
   end
 
   create_table "attractions", force: :cascade do |t|
     t.string "attraction_api_id"
     t.integer "trip_id"
+    t.string "name"
+    t.float "latitude"
+    t.float "longitude"
+    t.string "story"
+    t.string "phone"
+    t.string "address"
+    t.string "website"
+    t.string "price"
+    t.string "hours"
+    t.string "bus"
+    t.string "train"
+    t.string "snippet"
   end
 
   create_table "authentications", force: :cascade do |t|
