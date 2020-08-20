@@ -6,20 +6,62 @@ class Trip < ActiveRecord::Base
     has_many :countries, through: :itineraries
 
     def self.list_all_user_trips(prompt: prompt, country_obj: nil, city_obj: nil, attraction_obj: nil, activity_obj: nil)
-        selected = prompt.select("choose one of the following trips") do |menu|
-            User.logged_in_user.trips.each do |trip|
-                menu.choice name:"#{trip.name}", value: trip.id
+        while true do
+            selected = prompt.select("choose one of the following trips") do |menu|
+                User.find(User.logged_in_user).trips.each do |trip|
+                    menu.choice name:"#{trip.name}", value: trip
+                end
+                menu.choice name:"Create new Trip", value: 0
+                menu.choice name:"Cancel", value: -1
             end
-            menu.choice name:"Create new Trip", value: 0
-            menu.choice name:"Cancel", value: -1
+            if selected == 0
+                puts "TODO: Call method creating new Trip, and adding this country/city/attraction/activity to it"
+                newTrip = User.find(User.logged_in_user).create_trip(prompt)
+                binding.pry
+            elsif selected == -1
+                return
+            else
+                ## puts "TODO: link this country to selected trip using trip id in selected variable"
+                if(!country_obj && !city_obj && !attraction_obj && !activity_obj)
+                    selected.menu(prompt)
+                end
+            end
         end
-        if selected == 0
-            puts "TODO: Call method creating new Trip, and adding this country/city/attraction/activity to it"
-        elsif selected == -1
-            return
-        else
-            puts "TODO: link this country to selected trip using trip id in selected variable"
+    end
+
+    def menu(prompt)
+        self.display
+        while true do
+            selected = prompt.select("#{self.name} is the attraction you are looking for, what would you like to do? ") do |menu|
+                menu.choice name:"Modify #{self.name}", value: 1
+                menu.choice name:"Delete #{self.name}", value: 2
+                menu.choice name:"Mark as Complete", value: 3
+                menu.choice name:"Cancel", value:-1
+            end
+            case selected
+            when 1
+                ## TODO Call update Trip
+                self.trip_update(prompt)
+                puts "Updated"
+            when 2
+                ## TODO Delete Trip
+                if !prompt.no?("Are you sure you want to delete #{self.name}?, Warning: it will delete all related content...")
+                    self.destroy
+                end
+                break
+            when 3
+                if prompt.yes?("Are you sure you want to mark #{self.name} as Complete?" )
+                    self.trip_finalize
+                end
+                break
+            when -1
+                return
+            end
         end
+    end
+
+    def display
+        ## TODO: Create method to display trip info...
     end
 
     def self.create_trip_by_city(name, city, start, fin)
@@ -37,10 +79,18 @@ class Trip < ActiveRecord::Base
     end
 
     def trip_finalize
+        #binding.pry
         self.update(completed?: true)
     end 
 
-    def update_trip(location, start, finish)
+    def trip_update(prompt)
+        self.name = prompt.ask("Want to update the name? current: [#{self.name}], new: ", default:"#{self.name}")
+        self.departure = prompt.ask("Want to update departure date? format:[dd/mm/yyyy] current: [#{self.departure}], new: ", default: self.departure, validate: /^([2][0][1-9][0-9])[-\/.](0[1-9]|[1][0-2])[-\/.](0[1-9]|[12][0-9]|3[01])/)
+        self.return = prompt.ask("Want to update the return date? format:[dd/mm/yyyy] current:[#{self.return}], new: ", default: self.return, validate: /^([2][0][1-9][0-9])[-\/.](0[1-9]|[1][0-2])[-\/.](0[1-9]|[12][0-9]|3[01])/)
+        self.save
+    end
+
+    def update_trip(location=nil, start, finish)
         if City.all.include?(location)
             Itinerary.create_by_city(location, start, finish, self)
             self.sort_dates

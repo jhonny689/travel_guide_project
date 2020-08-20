@@ -21,7 +21,7 @@ class CLI
             menu.choice name: "Sign in",  value: 1
             menu.choice name: "Sign up", value: 2
             menu.choice name: "Exit",  value: 3
-            #menu.choice name: "test", value: 4
+            menu.choice name: "test", value: 4
           end
         case selected
         when 1
@@ -30,14 +30,14 @@ class CLI
             puts "create sign up method"
             new_user = Authentication.signup(prompt)
             select_option = prompt.yes?("Your user has been created, would you like to sign in?")
-            binding.pry
+            #binding.pry
             if select_option == true
                 logged_in_user = new_user
             end
         when 3
             return exit!
         when 4
-            go_to_search(prompt)
+            binding.pry
         end
     end
 

@@ -10,11 +10,12 @@ class User < ActiveRecord::Base
         @@logged_in_user
     end
     def self.logged_in_user= (user)
-        @@logged_in_user = user
+        @@logged_in_user = user.id
     end
 
-    def create_trip(name)
-        Trip.create(user_id: self, name: name)
+    def create_trip(prompt)
+        name = prompt.ask("What do you want to name your trip? ")
+        Trip.create(user: self, name: name)
     end
 
     def create_trip_with_itinerary(name, start, fin)
