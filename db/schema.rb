@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_18_162618) do
+ActiveRecord::Schema.define(version: 2020_08_19_150645) do
 
   create_table "activities", force: :cascade do |t|
     t.integer "trip_id"
@@ -49,6 +49,7 @@ ActiveRecord::Schema.define(version: 2020_08_18_162618) do
     t.date "departure"
     t.date "return"
     t.boolean "completed?", default: false
+    t.string "name"
   end
 
   create_table "users", force: :cascade do |t|
