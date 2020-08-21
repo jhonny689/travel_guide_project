@@ -72,9 +72,9 @@ class Trip < ActiveRecord::Base
     end
 
     def menu(prompt)
-        self.display
         while true do
             if(!self.completed?)
+                self.display
                 selected = prompt.select("#{self.name} is the selected trip, what would you like to do? ") do |menu|
                     menu.choice name:"Modify #{self.name}", value: 1
                     menu.choice name:"Delete #{self.name}", value: 2
@@ -106,7 +106,7 @@ class Trip < ActiveRecord::Base
                 break
             when 9
                 ## Display only for fun
-
+                self.display
             when -1
                 return
             end
@@ -115,6 +115,20 @@ class Trip < ActiveRecord::Base
 
     def display
         ## TODO: Create method to display trip info...
+        prepared_string = "You are viewing Trip #{self.name}, this trip contains the following:\n"
+        prepared_string += "Countries:"
+        self.get_countries_array.each{|c| prepared_string += " #{c};"}
+        prepared_string += "\nCities:"
+        self.get_cities_array.each{|c| prepared_string += " #{c};"}
+        prepared_string += "\nAttractions:"
+        self.get_attractions_array.each{|c| prepared_string += " #{c};"}
+        prepared_string += "\nActivities:"
+        self.get_activities_array.each{|c| prepared_string += " #{c};"}
+
+        display_box = TTY::Box.frame(width:100, height:9, padding: 1, align: :left) do
+            prepared_string
+        end
+        print display_box
     end
 
     def self.create_trip_by_city(name, city, start, fin)
@@ -142,8 +156,8 @@ class Trip < ActiveRecord::Base
 
     def trip_update(prompt)
         self.name = prompt.ask("Want to update the name? current: [#{self.name}], new: ", default:"#{self.name}")
-        self.departure = prompt.ask("Want to update departure date? format:[dd/mm/yyyy] current: [#{self.departure}], new: ", default: self.departure, validate: /^([2][0][1-9][0-9])[-\/.](0[1-9]|[1][0-2])[-\/.](0[1-9]|[12][0-9]|3[01])/)
-        self.return = prompt.ask("Want to update the return date? format:[dd/mm/yyyy] current:[#{self.return}], new: ", default: self.return, validate: /^([2][0][1-9][0-9])[-\/.](0[1-9]|[1][0-2])[-\/.](0[1-9]|[12][0-9]|3[01])/)
+        self.departure = prompt.ask("Want to update departure date? format:[yyyy/mm/dd] current: [#{self.departure}], new: ", default: self.departure, validate: /^([2][0][1-9][0-9])[-\/.](0[1-9]|[1][0-2])[-\/.](0[1-9]|[12][0-9]|3[01])/)
+        self.return = prompt.ask("Want to update the return date? format:[yyyy/mm/dd] current:[#{self.return}], new: ", default: self.return, validate: /^([2][0][1-9][0-9])[-\/.](0[1-9]|[1][0-2])[-\/.](0[1-9]|[12][0-9]|3[01])/)
         self.save
     end
 
@@ -176,6 +190,19 @@ class Trip < ActiveRecord::Base
         Activity.create(trip: self, activity_api_id: act.id)
     end
 
+    def get_countries_array
+        self.countries.map{|country| country.name}
+    end
+    def get_cities_array
+        self.all_cities.map{|city| city.name}
+    end
+    def get_activities_array
+        self.activities.map{|act| act.name}
+    end
+    def get_attractions_array
+        # binding.pry
+        self.attractions.map{|att| att.name}
+    end
 
 end
 

@@ -126,7 +126,11 @@ class Search
 
         url_query += annotate +"&"+ trigram +"&"+ location_id +"&"+ count +"&"+ fields +"&"+ order_by
         attraction_resp = self.execute(url_query)
-        attraction = Attraction.new_from_api(attraction_resp["results"][0])
+        if attraction_resp["results"][0] 
+            attraction = Attraction.new_from_api(attraction_resp["results"][0])
+        else
+            nil
+        end
     end
 
     def self.lookup_labels_in_city(city)

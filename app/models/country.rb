@@ -38,8 +38,11 @@ class Country < ActiveRecord::Base
     end
 
     def display
-        puts "The #{self.name}, has a score of #{self.score}"
-        puts "The #{self.snippet}"
+        prepared_string = "Congratulations!! You landed in #{self.name};\n#{self.snippet}"
+        display_box = TTY::Box.frame(width:100, height:9, padding: 1, align: :left) do
+            prepared_string
+        end
+        print display_box
     end
 
     def lookup_cities(prompt)

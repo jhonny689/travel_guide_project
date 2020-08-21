@@ -15,8 +15,9 @@ class City < ActiveRecord::Base
     end
 
     def menu(prompt)
-        self.display
         while true do
+            system "clear"
+            self.display
             selected = prompt.select("#{self.name} is the city you are looking for, what would you like to do next?") do |menu|
                 menu.choice name: "Add City to Trip", value: 1
                 menu.choice name: "Lookup other cities people visited", value: 2
@@ -49,11 +50,11 @@ class City < ActiveRecord::Base
     end
 
     def display
-        puts "#{self.name} city of #{self.country_api_id}"
-        puts "Known as #{self.snippet}"
-        puts "#{self.name} has a population of #{self.population}"
-        puts "#{self.name} is located at #{self.latitude} latitude and #{longitude} longitude."
-        puts "#{self.name} score is #{self.score}"
+        prepared_string = "Congratulations!! You landed in #{self.name}; city of #{self.country_api_id}\nKnown as #{self.snippet}.\n#{self.name} has a population of #{self.population}.\n#{self.name} is located at #{self.latitude} latitude and #{longitude} longitude.\n#{self.name} score is #{self.score}"
+        display_box = TTY::Box.frame(width:100, height:9, padding: 0.5, align: :left) do
+            prepared_string
+        end
+        print display_box
     end
 
     def people_also_visited

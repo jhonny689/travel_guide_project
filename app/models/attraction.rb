@@ -35,16 +35,17 @@ class Attraction < ActiveRecord::Base
     end
 
     def menu(prompt)
-        self.display
+        system "clear"
         while true do
+            self.display
             selected = prompt.select("#{self.name} is the attraction you are looking for, what would you like to do? ") do |menu|
                 menu.choice name:"Add attraction to Trip", value: 1
-                menu.choice name:"Go back", value: 2
+                menu.choice name:"Go back", value: -1
             end
             case selected
             when 1
                 Trip.list_all_user_trips(prompt: prompt, attraction_obj: self)
-            when 2
+            when -1
                 return
             end
         end
@@ -52,5 +53,19 @@ class Attraction < ActiveRecord::Base
 
     def display
         ## TODO display the info of the attraction ##
+        prepared_string = "Congratulations!! You found #{self.name}."
+        prepared_string += "\n#{self.name} is located at #{self.latitude} latitude and #{longitude} longitude."
+        prepared_string += "\n#{self.name} contact details are the following:"
+        prepared_string += "\n- phone: #{self.phone}"
+        prepared_string += "\n- address: #{self.address}"
+        prepared_string += "\n- website: #{self.website}"
+        prepared_string += "\n- price: #{self.price}"
+        prepared_string += "\n- hours: #{self.hours}"
+
+
+        display_box = TTY::Box.frame(width:100, height:10, padding: 0, align: :left) do
+            prepared_string
+        end
+        print display_box
     end
 end

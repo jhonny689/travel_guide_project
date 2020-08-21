@@ -17,6 +17,7 @@ GEM
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
     dotenv (2.7.6)
+    equatable (0.6.1)
     http-accept (1.7.0)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
@@ -29,6 +30,7 @@ GEM
     minitest (5.14.1)
     mustermann (1.1.1)
       ruby2_keywords (~> 0.0.1)
+    necromancer (0.6.0)
     netrc (0.11.0)
     pastel (0.8.0)
       tty-color (~> 0.5)
@@ -76,6 +78,13 @@ GEM
       tty-screen (~> 0.8)
       wisper (~> 2.0)
     tty-screen (0.8.1)
+    tty-table (0.3.0)
+      equatable (~> 0.5)
+      necromancer (~> 0.3)
+      pastel (~> 0.4)
+      tty-screen (~> 0.2)
+      unicode_utils (~> 1.4.0)
+      verse (~> 0.4)
     tzinfo (1.2.7)
       thread_safe (~> 0.1)
     unf (0.1.4)
@@ -83,6 +92,8 @@ GEM
     unf_ext (0.0.7.7)
     unicode-display_width (1.7.0)
     unicode_utils (1.4.0)
+    verse (0.4.0)
+      unicode_utils (~> 1.4.0)
     wisper (2.0.1)
     zeitwerk (2.4.0)
 
@@ -100,6 +111,7 @@ DEPENDENCIES
   sqlite3
   tty-box
   tty-prompt
+  tty-table
 
 BUNDLED WITH
    2.1.4
