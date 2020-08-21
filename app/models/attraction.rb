@@ -7,6 +7,7 @@ class Attraction < ActiveRecord::Base
         latitude = api_att["coordinates"]["latitude"]
         longitude = api_att["coordinates"]["longitude"]
         story = api_att["intro"]
+        city_api_id = api_att["location_id"]
         #binding.pry
         index = api_att["properties"].index{|property| property["key"] == "phone"}
         phone = index ? api_att["properties"][index]["value"] : nil
@@ -31,7 +32,7 @@ class Attraction < ActiveRecord::Base
 
         snippet = api_att["snippet"]
 
-        self.new(attraction_api_id: api_id, name: name, latitude: latitude, longitude: longitude, story: story, phone: phone, address: address, website: website, price: price, hours: hours, bus: bus, train: train, snippet: snippet)
+        self.new(attraction_api_id: api_id, name: name, city_api_id: city_api_id, latitude: latitude, longitude: longitude, story: story, phone: phone, address: address, website: website, price: price, hours: hours, bus: bus, train: train, snippet: snippet)
     end
 
     def menu(prompt)

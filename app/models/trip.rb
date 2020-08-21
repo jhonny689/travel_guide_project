@@ -45,10 +45,12 @@ class Trip < ActiveRecord::Base
                         if User.find(User.logged_in_user).trips.find(selected.id).attractions.any?{|trip_attraction| trip_attraction.attraction_api_id == attraction_obj.attraction_api_id}
                             prompt.warn("Attraction #{attraction_obj.name} has been added to the same trip before, you cannot add it more than once")
                         elsif selected.all_cities.map{|city| city.api_id}.include?(attraction_obj.city_api_id)
+                            binding.pry
                             attraction_obj.trip_id = selected.id
                             attraction_obj.save
                             #break
                         else
+                            binding.pry
                             prompt.warn("This attraction does not belong to any city in this trip, kindly make sure to add the corresponding city first.")
                             #break
                         end
@@ -165,9 +167,10 @@ class Trip < ActiveRecord::Base
    
         if location.class == City
             if self.all_cities.any?{|trip_city| trip_city.api_id == location.api_id}
-                puts "#{city.name} already exists for #{self.name}, add it to a different trip maybe!?"
+                puts "#{location.name} already exists for #{self.name}, add it to a different trip maybe!?"
             else
                 country = Country.new_from_api(Search.lookup_country_by_name(location.country_api_id))
+                binding.pry
                 Itinerary.create_by_city(location, country, start, finish, self)
                 self.sort_dates
             end

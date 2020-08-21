@@ -7,6 +7,7 @@ class Activity < ActiveRecord::Base
         latitude = api_activity["coordinates"]["latitude"]
         longitude = api_activity["coordinates"]["longitude"]
         story = api_activity["intro"]
+        city_api_id = api_activity["location_id"]
         #binding.pry
         index = api_activity["properties"].index{|property| property["key"] == "phone"}
         phone = index ? api_activity["properties"][index]["value"] : nil
@@ -31,7 +32,7 @@ class Activity < ActiveRecord::Base
 
         snippet = api_activity["snippet"]
 
-        self.new(activity_api_id: api_id, name: name, latitude: latitude, longitude: longitude, story: story, phone: phone, address: address, website: website, price: price, hours: hours, bus: bus, train: train, snippet: snippet)
+        self.new(activity_api_id: api_id, city_api_id: city_api_id, name: name, latitude: latitude, longitude: longitude, story: story, phone: phone, address: address, website: website, price: price, hours: hours, bus: bus, train: train, snippet: snippet)
     end
 
     def self.list_activity_types(prompt, city)

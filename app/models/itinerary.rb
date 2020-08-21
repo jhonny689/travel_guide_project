@@ -7,6 +7,7 @@ class Itinerary < ActiveRecord::Base
         fin_date = Date.parse(fin)
         #city.country = Country.find_by(country_api_id: country.country_api_id) ? Country.find_by(country_api_id: country.country_api_id) : country
         #binding.pry
+        binding.pry
         if User.find(User.logged_in_user).trips.find(trip.id).countries.find_by(country_api_id: country.country_api_id)
             city.country_id =  User.find(User.logged_in_user).trips.find(trip.id).countries.find_by(country_api_id: country.country_api_id).id 
         else
