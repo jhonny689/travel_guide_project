@@ -12,8 +12,10 @@ class Country < ActiveRecord::Base
     end
 
     def menu(prompt)
-        self.display
         while true do
+            system "clear"
+            CLI.display_header_menu
+            self.display
             selected = prompt.select("#{self.name} is the country you are looking for, what would you like to do next?") do |menu|
                 menu.choice name: "Add Country to Trip", value: 1
                 menu.choice name: "Lookup cities within the country", value: 2

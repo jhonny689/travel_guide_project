@@ -7,6 +7,8 @@ class Trip < ActiveRecord::Base
 
     def self.list_all_user_trips(prompt: prompt, country_obj: nil, city_obj: nil, attraction_obj: nil, activity_obj: nil)
         while true do
+            system "clear"
+            CLI.display_header_menu
             selected = prompt.select("choose one of the following trips") do |menu|
                 User.find(User.logged_in_user).trips.each do |trip|
                     menu.choice name:"#{trip.name}", value: trip
@@ -74,7 +76,9 @@ class Trip < ActiveRecord::Base
     end
 
     def menu(prompt)
+        system "clear"
         while true do
+            CLI.display_header_menu
             if(!self.completed?)
                 self.display
                 selected = prompt.select("#{self.name} is the selected trip, what would you like to do? ") do |menu|
@@ -114,6 +118,14 @@ class Trip < ActiveRecord::Base
             end
         end
     end
+
+    # def self.display_header_menu
+    #     ## TODO: Create method to display trip info...
+    #     box = TTY::Box.frame(width:100, height:9, padding: 3, align: :center) do
+    #         "Welcome #{User.find(User.logged_in_user).full_name}, we are at your service..."
+    #     end
+    #     print box
+    # end
 
     def display
         ## TODO: Create method to display trip info...

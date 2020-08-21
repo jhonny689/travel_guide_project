@@ -36,7 +36,6 @@ class Attraction < ActiveRecord::Base
     end
 
     def menu(prompt)
-        system "clear"
         while true do
             self.display
             selected = prompt.select("#{self.name} is the attraction you are looking for, what would you like to do? ") do |menu|
