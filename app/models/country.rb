@@ -60,5 +60,31 @@ class Country < ActiveRecord::Base
     def city_names
         cities.map{|e|e.name}.flatten
     end
+
+    def trip_country_menu(prompt)
+        while true do
+            selected = prompt.select("How would you like to edit your trip to #{self.name}") do |menu|
+                menu.choice name: "Change the dates of your trip to #{self.name}", value: 1
+                menu.choice name: "Remove #{self.name} from your trip", value: 2
+                menu.choice name: "Return", value: 3
+            end
+            case selected
+            when 1
+                if prompt.yes?("Are you sure you want to change the dates of your trip to #{self.name}?") 
+                    start_date = prompt.ask("Please enter your arrival date [yyyy/mm/dd],  current: [#{self.itineraries[0].itinerary_start}], new: ", default: self.itineraries[0].itinerary_start, validate: /^([2][0][1-9][0-9])[-\/.](0[1-9]|[1][0-2])[-\/.](0[1-9]|[12][0-9]|3[01])/)
+                    fin_date = prompt.ask("Please enter your departure date [yyyy/mm/dd], current: [#{self.itineraries[0].itinerary_end}], new: ", default: self.itineraries[0].itinerary_end, validate: /^([2][0][1-9][0-9])[-\/.](0[1-9]|[1][0-2])[-\/.](0[1-9]|[12][0-9]|3[01])/)
+                    self.itineraries[0].change_dates(start_date, fin_date)
+                end
+            when 2
+                if prompt.yes?("Are you sure you want to delete the dates of your trip to #{self.name}?") 
+                    self.itineraries.select{|e|e.country_id == self.id}.each{|e|e.destroy}
+                    self.reload
+                else return
+                end
+            when 3
+                break
+            end
+        end
+    end
     
 end

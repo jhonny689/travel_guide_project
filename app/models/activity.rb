@@ -95,4 +95,13 @@ class Activity < ActiveRecord::Base
         end
         print display_box
     end
+
+
+    def activity_menu(prompt)
+        if prompt.yes?("Are you sure you want to delete your trip activity to #{self.name}?") 
+            self.destroy
+        else return
+        end
+    end
+
 end

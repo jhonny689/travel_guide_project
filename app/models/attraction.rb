@@ -69,4 +69,12 @@ class Attraction < ActiveRecord::Base
         end
         print display_box
     end
+
+    def attract_menu(prompt)
+        if prompt.yes?("Are you sure you want to delete your visit to #{self.name}?") 
+            self.destroy
+        else return
+        end
+    end
+
 end

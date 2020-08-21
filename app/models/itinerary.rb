@@ -7,7 +7,6 @@ class Itinerary < ActiveRecord::Base
         fin_date = Date.parse(fin)
         #city.country = Country.find_by(country_api_id: country.country_api_id) ? Country.find_by(country_api_id: country.country_api_id) : country
         #binding.pry
-        binding.pry
         if User.find(User.logged_in_user).trips.find(trip.id).countries.find_by(country_api_id: country.country_api_id)
             city.country_id =  User.find(User.logged_in_user).trips.find(trip.id).countries.find_by(country_api_id: country.country_api_id).id 
         else
@@ -16,7 +15,7 @@ class Itinerary < ActiveRecord::Base
             city.country_id = country.id
         end
         city.save
-        Itinerary.create(country_id: city.country_id, itinerary_start: start_date, itinerary_end: fin_date, trip_id: trip.id)
+        Itinerary.create(country_id: city.country_id, city_id: city.id, itinerary_start: start, itinerary_end: fin, trip_id: trip.id)
     end
 
     def change_dates(start, fin)

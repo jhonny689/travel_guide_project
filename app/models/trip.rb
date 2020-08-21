@@ -45,12 +45,12 @@ class Trip < ActiveRecord::Base
                         if User.find(User.logged_in_user).trips.find(selected.id).attractions.any?{|trip_attraction| trip_attraction.attraction_api_id == attraction_obj.attraction_api_id}
                             prompt.warn("Attraction #{attraction_obj.name} has been added to the same trip before, you cannot add it more than once")
                         elsif selected.all_cities.map{|city| city.api_id}.include?(attraction_obj.city_api_id)
-                            binding.pry
+                            # binding.pry
                             attraction_obj.trip_id = selected.id
                             attraction_obj.save
                             #break
                         else
-                            binding.pry
+                            # binding.pry
                             prompt.warn("This attraction does not belong to any city in this trip, kindly make sure to add the corresponding city first.")
                             #break
                         end
@@ -80,6 +80,7 @@ class Trip < ActiveRecord::Base
                 selected = prompt.select("#{self.name} is the selected trip, what would you like to do? ") do |menu|
                     menu.choice name:"Modify #{self.name}", value: 1
                     menu.choice name:"Delete #{self.name}", value: 2
+                    menu.choice name:"Components of trip #{self.name}", value: 4
                     menu.choice name:"Mark as Complete", value: 3
                     menu.choice name:"Cancel", value:-1
                 end
@@ -106,6 +107,9 @@ class Trip < ActiveRecord::Base
                     self.trip_finalize
                 end
                 break
+            when 4
+                self.modify_components(prompt)
+                self.reload
             when 9
                 ## Display only for fun
                 self.display
@@ -170,7 +174,7 @@ class Trip < ActiveRecord::Base
                 puts "#{location.name} already exists for #{self.name}, add it to a different trip maybe!?"
             else
                 country = Country.new_from_api(Search.lookup_country_by_name(location.country_api_id))
-                binding.pry
+                # binding.pry
                 Itinerary.create_by_city(location, country, start, finish, self)
                 self.sort_dates
             end
@@ -214,23 +218,26 @@ class Trip < ActiveRecord::Base
     def modify_components(prompt)
         while true do
             selected = prompt.select("#{self.name} is the selected trip, what would you like to do? ") do |menu|
-                menu.choice name:"List countries", value: 1
-                menu.choice name:"List cities", value: 2
-                menu.choice name:"List activities", value: 3
-                menu.choice name:"List attractions", value: 4
+                menu.choice name:"Countries", value: 1
+                menu.choice name:"Cities", value: 2
+                menu.choice name:"Activities", value: 3
+                menu.choice name:"Attractions", value: 4
                 menu.choice name:"Cancel", value:-1
                 end
             case selected
             when 1
                 select_country = prompt.select("Please choose a country destination to modify") do |menu|
                     menu.choice name: "Cancel", value: -1
-                    self.countries.each do |nation|
-                        menu.choice name: "Country: #{nation.name}, Arrival Date: #{nation.itineraries[0].itinerary_start} - Departure Date: #{nation.itineraries[0].itinerary_end}", value: nation
+                    #binding.pry
+                    self.countries.uniq.each do |nation|
+                        Itinerary.all.filter{|itin| itin.country_id == nation.id}.each do |it|
+                            menu.choice name: "Country: #{nation.name}, Arrival Date: #{it.itinerary_start} - Departure Date: #{it.itinerary_end}", value: nation
+                        end
                     end  
                 end
                 if select_country!= -1
                     select_country.trip_country_menu(prompt)
-                elsif select_country = 1
+                elsif select_country == 1
                     return
                 else
                     return
@@ -238,13 +245,16 @@ class Trip < ActiveRecord::Base
             when 2
                 select_city = prompt.select("Please choose a city destination to modify") do |menu|
                     menu.choice name: "Cancel", value: -1
-                    self.all_cities.each do |city|
-                        menu.choice name: "City: #{city.name}, Arrival Date: #{city.country.itineraries[0].itinerary_start} - Departure Date: #{city.country.itineraries[0].itinerary_end}", value: city
+                    self.all_cities.uniq.each do |city|
+                        # binding.pry
+                        Itinerary.all.filter{|itin| itin.city_id == city.id}.uniq.each do |it|
+                        menu.choice name: "City: #{city.name}, Arrival Date: #{it.itinerary_start} - Departure Date: #{it.itinerary_end}", value: city
+                        end
                     end
                 end
                 if select_city!= -1
                     select_city.trip_city_menu(prompt)
-                elsif select_city = 1
+                elsif select_city == 1
                     return
                 else
                     return
@@ -253,17 +263,31 @@ class Trip < ActiveRecord::Base
                 select_acts = prompt.select("Please choose an activity to modify") do |menu|
                 menu.choice name: "Cancel", value: -1
                 self.activities.each do |act|
-                    menu.choice name: "#{act.name}"
+                    menu.choice name: "#{act.name}", value: act
                     end
                 end
-                if select_acts 
+                if select_acts!= -1
+                    select_acts.activity_menu(prompt)
+                elsif select_acts == 1
+                    return
+                else
+                    return
+                end
+                # if select_acts 
             when 4
                 select_attracts = prompt.select("Please choose an activity to modify") do |menu|
                     menu.choice name: "Cancel", value: -1
                     self.attractions.each do |attracts|
-                        menu.choice name: "#{attracts.name}"
+                        menu.choice name: "#{attracts.name}", value: attracts
                         end
                     end 
+                    if select_attracts!= -1
+                        select_attracts.attract_menu(prompt)
+                    elsif select_attracts == 1
+                        return
+                    else
+                        return
+                    end
             when -1    
                 break
             end
