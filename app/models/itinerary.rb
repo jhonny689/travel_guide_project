@@ -11,9 +11,9 @@ class Itinerary < ActiveRecord::Base
         if User.find(User.logged_in_user).trips.find(trip.id).countries.find_by(country_api_id: country.country_api_id)
             city.country_id =  User.find(User.logged_in_user).trips.find(trip.id).countries.find_by(country_api_id: country.country_api_id).id 
         else
-            db_country = Country.new_from_api(country)
-            db_country.save
-            city.country_id = db_country.id
+            # db_country = Country.new_from_api(country)
+            country.save
+            city.country_id = country.id
         end
         city.save
         Itinerary.create(country_id: city.country_id, itinerary_start: start_date, itinerary_end: fin_date, trip_id: trip.id)

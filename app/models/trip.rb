@@ -175,9 +175,13 @@ class Trip < ActiveRecord::Base
                 self.sort_dates
             end
         elsif location.class == Country
-            location.save
-            Itinerary.create(country: location, itinerary_start: start, itinerary_end: finish, trip: self)
-            self.sort_dates
+            if self.countries.any?{|trip_country| trip_country.country_api_id == location.country_api_id}
+                puts "#{location.name} already exist for #{self.name}, add it to a different trip maybe!?"
+            else
+                location.save
+                Itinerary.create(country: location, itinerary_start: start, itinerary_end: finish, trip: self)
+                self.sort_dates
+            end
         else 
             "Please enter a valid place you would like to visit"
         end
