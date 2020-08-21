@@ -7,6 +7,8 @@ class Trip < ActiveRecord::Base
 
     def self.list_all_user_trips(prompt: prompt, country_obj: nil, city_obj: nil, attraction_obj: nil, activity_obj: nil)
         while true do
+            system "clear"
+            CLI.display_header_menu
             selected = prompt.select("choose one of the following trips") do |menu|
                 User.find(User.logged_in_user).trips.each do |trip|
                     menu.choice name:"#{trip.name}", value: trip
@@ -74,7 +76,9 @@ class Trip < ActiveRecord::Base
     end
 
     def menu(prompt)
+        system "clear"
         while true do
+            CLI.display_header_menu
             if(!self.completed?)
                 self.display
                 selected = prompt.select("#{self.name} is the selected trip, what would you like to do? ") do |menu|
@@ -118,6 +122,14 @@ class Trip < ActiveRecord::Base
             end
         end
     end
+
+    # def self.display_header_menu
+    #     ## TODO: Create method to display trip info...
+    #     box = TTY::Box.frame(width:100, height:9, padding: 3, align: :center) do
+    #         "Welcome #{User.find(User.logged_in_user).full_name}, we are at your service..."
+    #     end
+    #     print box
+    # end
 
     def display
         ## TODO: Create method to display trip info...
@@ -179,7 +191,8 @@ class Trip < ActiveRecord::Base
                 self.sort_dates
             end
         elsif location.class == Country
-            if self.countries.any?{|trip_country| trip_country.country_api_id == location.country_api_id}
+            #if 
+            if self.countries.find_by(country_api_id: location.country_api_id).id != nil && self.itineraries.any?{|it| it.country_id == location.country_api_id && it.city_id == nil}
                 puts "#{location.name} already exist for #{self.name}, add it to a different trip maybe!?"
             else
                 location.save
@@ -202,10 +215,10 @@ class Trip < ActiveRecord::Base
     end
 
     def get_countries_array
-        self.countries.map{|country| country.name}
+        self.countries.map{|country| country.name}.uniq
     end
     def get_cities_array
-        self.all_cities.map{|city| city.name}
+        self.all_cities.map{|city| city.name}.uniq
     end
     def get_activities_array
         self.activities.map{|act| act.name}
@@ -230,7 +243,7 @@ class Trip < ActiveRecord::Base
                     menu.choice name: "Cancel", value: -1
                     #binding.pry
                     self.countries.uniq.each do |nation|
-                        Itinerary.all.filter{|itin| itin.country_id == nation.id}.each do |it|
+                        Itinerary.all.filter{|itin| itin.country_id == nation.id && itin.city_id == nil}.each do |it|
                             menu.choice name: "Country: #{nation.name}, Arrival Date: #{it.itinerary_start} - Departure Date: #{it.itinerary_end}", value: nation
                         end
                     end  

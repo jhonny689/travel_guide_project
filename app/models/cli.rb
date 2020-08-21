@@ -48,10 +48,7 @@ class CLI
     def dashboard_functionality(logged_in_user, prompt)
         while true do
             system "clear"
-            box = TTY::Box.frame(width:100, height:9, padding: 3, align: :center) do
-                "Welcome #{logged_in_user.full_name}, we are at your service..."
-            end
-            print box
+            self.class.display_header_menu
             selected = prompt.select("What would you like to do?") do |menu|
                 menu.choice name: "Go To Trips",  value: 1
                 menu.choice name: "Go To Search", value: 2
@@ -73,10 +70,7 @@ class CLI
     def go_to_search(prompt)
         while true do
             system "clear"
-            display_box = TTY::Box.frame(width:100, height:9, padding: 3, align: :center) do
-                "Welcome to our search feature..."
-            end
-            print display_box 
+            self.class.display_header_menu
             selected = prompt.select("Kindly select one of the below options") do |menu|
                 menu.choice name: "Lookup a Country by name", value: 1
                 menu.choice name: "Lookup a City by name", value: 2
@@ -91,7 +85,6 @@ class CLI
             when 2
                 city = Search.lookup_city_by_name(prompt)
                 city ? city.menu(prompt) : ""
-                break
             when 3
                 puts "this feature is yet to be developed..."
             when 4
@@ -100,5 +93,12 @@ class CLI
                 return
             end
         end
+    end
+    def self.display_header_menu
+        ## TODO: Create method to display trip info...
+        box = TTY::Box.frame(width:100, height:9, padding: 3, align: :center) do
+            "Welcome #{User.find(User.logged_in_user).full_name}, we are at your service..."
+        end
+        print box
     end
 end

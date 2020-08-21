@@ -17,6 +17,8 @@ class City < ActiveRecord::Base
     def menu(prompt)
         while true do
             system "clear"
+            CLI.display_header_menu
+            self.country.display
             self.display
             selected = prompt.select("#{self.name} is the city you are looking for, what would you like to do next?") do |menu|
                 menu.choice name: "Add City to Trip", value: 1
@@ -48,7 +50,6 @@ class City < ActiveRecord::Base
             end
         end
     end
-
     def display
         prepared_string = "Congratulations!! You landed in #{self.name}; city of #{self.country_api_id}\nKnown as #{self.snippet}.\n#{self.name} has a population of #{self.population}.\n#{self.name} is located at #{self.latitude} latitude and #{longitude} longitude.\n#{self.name} score is #{self.score}"
         display_box = TTY::Box.frame(width:100, height:9, padding: 0.5, align: :left) do
@@ -99,7 +100,7 @@ class City < ActiveRecord::Base
                 # binding.pry
                 if prompt.yes?("Are you sure you want to delete the dates of your trip to #{self.name}?")
                     self.country.itineraries.find_by(city_id: self.id).destroy
-                    self.reload
+                    self.destroy
                 else return
                 end
             when 3

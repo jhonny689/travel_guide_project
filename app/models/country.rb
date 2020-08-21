@@ -12,8 +12,10 @@ class Country < ActiveRecord::Base
     end
 
     def menu(prompt)
-        self.display
         while true do
+            system "clear"
+            CLI.display_header_menu
+            self.display
             selected = prompt.select("#{self.name} is the country you are looking for, what would you like to do next?") do |menu|
                 menu.choice name: "Add Country to Trip", value: 1
                 menu.choice name: "Lookup cities within the country", value: 2
@@ -77,8 +79,9 @@ class Country < ActiveRecord::Base
                 end
             when 2
                 if prompt.yes?("Are you sure you want to delete the dates of your trip to #{self.name}?") 
-                    self.itineraries.select{|e|e.country_id == self.id}.each{|e|e.destroy}
-                    self.reload
+                    binding.pry
+                    self.itineraries.select{|e|e.country_id == self.id && e.city_id == nil}.each{|e|e.destroy}
+                    self.destroy
                 else return
                 end
             when 3

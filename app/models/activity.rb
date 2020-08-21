@@ -37,7 +37,7 @@ class Activity < ActiveRecord::Base
 
     def self.list_activity_types(prompt, city)
         available_labels = Search.lookup_labels_in_city(city)
-        while true
+        while true do
             answer = prompt.multi_select("Select the tags you want to search for: ") do |menu|
                 menu.choice "Cancel", :cancel
                 available_labels.each{|l| menu.choice l, l}
@@ -63,8 +63,8 @@ class Activity < ActiveRecord::Base
     end
 
     def menu(prompt)
-        self.display
         while true do
+            self.display
             selected = prompt.select("#{self.name} is the activity you are looking for, what would you like to do? ") do |menu|
                 menu.choice name:"Add activity to Trip", value: 1
                 menu.choice name:"Go back", value: 2
