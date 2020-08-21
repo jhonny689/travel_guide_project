@@ -22,7 +22,7 @@ class Itinerary < ActiveRecord::Base
     def change_dates(start, fin)
         self.itinerary_start = start
         self.itinerary_end = fin
-        self
+        self.save
     end
 
     # def delete_by_location(loc)

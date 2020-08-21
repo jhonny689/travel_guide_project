@@ -211,5 +211,64 @@ class Trip < ActiveRecord::Base
         self.attractions.map{|att| att.name}
     end
 
+    def modify_components(prompt)
+        while true do
+            selected = prompt.select("#{self.name} is the selected trip, what would you like to do? ") do |menu|
+                menu.choice name:"List countries", value: 1
+                menu.choice name:"List cities", value: 2
+                menu.choice name:"List activities", value: 3
+                menu.choice name:"List attractions", value: 4
+                menu.choice name:"Cancel", value:-1
+                end
+            case selected
+            when 1
+                select_country = prompt.select("Please choose a country destination to modify") do |menu|
+                    menu.choice name: "Cancel", value: -1
+                    self.countries.each do |nation|
+                        menu.choice name: "Country: #{nation.name}, Arrival Date: #{nation.itineraries[0].itinerary_start} - Departure Date: #{nation.itineraries[0].itinerary_end}", value: nation
+                    end  
+                end
+                if select_country!= -1
+                    select_country.trip_country_menu(prompt)
+                elsif select_country = 1
+                    return
+                else
+                    return
+                end
+            when 2
+                select_city = prompt.select("Please choose a city destination to modify") do |menu|
+                    menu.choice name: "Cancel", value: -1
+                    self.all_cities.each do |city|
+                        menu.choice name: "City: #{city.name}, Arrival Date: #{city.country.itineraries[0].itinerary_start} - Departure Date: #{city.country.itineraries[0].itinerary_end}", value: city
+                    end
+                end
+                if select_city!= -1
+                    select_city.trip_city_menu(prompt)
+                elsif select_city = 1
+                    return
+                else
+                    return
+                end
+            when 3
+                select_acts = prompt.select("Please choose an activity to modify") do |menu|
+                menu.choice name: "Cancel", value: -1
+                self.activities.each do |act|
+                    menu.choice name: "#{act.name}"
+                    end
+                end
+                if select_acts 
+            when 4
+                select_attracts = prompt.select("Please choose an activity to modify") do |menu|
+                    menu.choice name: "Cancel", value: -1
+                    self.attractions.each do |attracts|
+                        menu.choice name: "#{attracts.name}"
+                        end
+                    end 
+            when -1    
+                break
+            end
+        end
+    end
+
 end
 
