@@ -24,7 +24,6 @@ class CLI
                 menu.choice name: "Sign in",  value: 1
                 menu.choice name: "Sign up", value: 2
                 menu.choice name: "Exit",  value: 3
-                menu.choice name: "test", value: 4
             end
             case selected
             when 1
